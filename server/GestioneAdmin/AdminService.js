@@ -6,8 +6,7 @@ async function createAdminService(nome, pwd) {
 }
 
 async function loginService(nome, pwd) {
-    const bool = await existAdmin(nome, pwd)
-    return bool
+  return await existAdmin(nome, pwd); 
 }
 
 module.exports = {createAdminService, loginService}

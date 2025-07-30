@@ -1,19 +1,38 @@
 const express = require('express')
 const routAdmin = express.Router()
+const jwt = require('jsonwebtoken');
 const {createAdminService, loginService} = require('./AdminService')
 
-routAdmin.post('/login', async (req, res) => {
-    const {nome, pwd} = req.body
+const SECRET_KEY = 'chiave_super_segreta';
 
-    const bool = await loginService(nome, pwd)
-    if (bool == false) {
-        res.status(200).json({message: 'Dati ricevuti correttamente dal server Express', bool});
-        console.log('Login FALLITO.')
-    } else {
-        res.status(200).json({message: 'Dati ricevuti correttamente dal server Express', bool});
-        console.log('Login effettuato con successo, dati ricevuto dal client.')
-    }
-})
+//-------------------------LOGIN + JWT -------------------------------------------------------------
+routAdmin.post('/login', async (req, res) => {
+  const { nome, pwd } = req.body;
+
+  const admin = await loginService(nome, pwd);
+  if (!admin) {
+    console.log('Login FALLITO.');
+    return res.status(401).json({ message: 'Credenziali non valide', bool: false });
+  }
+
+  const token = jwt.sign(
+    {
+      id: admin._id,
+      nome: admin.nome
+    },
+    SECRET_KEY,
+    { expiresIn: '2h' }
+  );
+
+  console.log(`Login effettuato da ${admin.nome}`);
+
+  res.status(200).json({
+    message: 'Login OK',
+    bool: true,
+    token
+  });
+});
+//--------------------------------------------------------------------------------------------------------
 
 routAdmin.post('/signup', async (req, res) => {
     const {nome, pwd} = req.body

@@ -58,11 +58,12 @@ async function createAdmin(nome, password) {
 //--------------------Exist ADMIN------------------------------------------
 async function existAdmin(name, password) {
   const a = await admin.findOne({ nome: name });
-
-  if (!a) return false;
+  if (!a) return null;
 
   const isMatch = await confrontaPassword(password, a.password);
-  return isMatch;
+  if (!isMatch) return null;
+
+  return a; 
 }
 
 //-------------------------------------------------------------------------

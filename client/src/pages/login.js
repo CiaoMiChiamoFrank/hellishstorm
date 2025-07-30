@@ -27,10 +27,15 @@ export default function AdminLogin() {
 
       const data = await res.json();
 
-      if (data.bool === true) {
-        console.log("Login OK");
-        navigate('/magazzino'); // 🔁 Vai a Magazzino
-      } else {
+    if (data.bool === true && data.token) {
+      console.log("Login OK");
+
+      //Salva il token in localStorage
+      localStorage.setItem('token', data.token);
+
+      //Vai alla pagina protetta
+      navigate('/magazzino');
+    }  else {
         setError('Credenziali non valide');
       }
 
