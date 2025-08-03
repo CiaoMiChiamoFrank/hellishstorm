@@ -2,6 +2,7 @@
 const jwt = require('jsonwebtoken');
 
 function verifyToken(req, res, next) {
+  console.log('controllo autorizzazioneeeeeeeeeee')
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')[1];
 
@@ -9,7 +10,6 @@ function verifyToken(req, res, next) {
 
   jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
     if (err) return res.status(403).json({ error: 'Token non valido' });
-
     req.user = user;
     next();
   });

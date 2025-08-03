@@ -1,85 +1,125 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+import homepageImage from './img/home.JPG';
+import { useNavigate } from 'react-router-dom';
 
-const HomePage = () => {
-  const [file, setFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [uploadedUrl, setUploadedUrl] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export default function HellishStormHomepage() {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const image = homepageImage;
+  const navigate = useNavigate();
 
-  // Salva il file selezionato
-  const handleFileChange = (e) => {
-    const selected = e.target.files[0];
-    if (selected) {
-      setFile(selected);
-      setPreviewUrl(URL.createObjectURL(selected)); // anteprima locale
-    }
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
+  const handleShopClick = () => {
+    navigate('/catalogo');
   };
 
-  // Invia al backend
-  const handleUpload = async (e) => {
-    e.preventDefault();
-
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await fetch('http://localhost:5000/api/upload/image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setUploadedUrl(data.url);
-      } else {
-        throw new Error(data.error || 'Upload fallito');
-      }
-    } catch (err) {
-      console.error(err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto', padding: '2rem' }}>
-      <h2>Carica un'immagine su Cloudinary</h2>
+    <div className={`min-h-screen bg-white transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-100 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex justify-between items-center">
+            {/* Logo */}
+            <div className="text-xl sm:text-2xl font-light text-black tracking-widest">
+              HELLISHSTORM
+            </div>
 
-      <form onSubmit={handleUpload}>
-        <input type="file" accept="image/*" onChange={handleFileChange} required />
-        <br /><br />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Caricamento...' : 'Carica'}
-        </button>
-      </form>
+            {/* Desktop Nav */}
+            <nav className="hidden sm:block">
+              <button
+                onClick={handleShopClick}
+                className="text-black font-light tracking-wide hover:text-gray-600 transition-colors duration-300 text-sm sm:text-base"
+              >
+                SHOP
+              </button>
+            </nav>
 
-      {previewUrl && (
-        <div style={{ marginTop: '1rem' }}>
-          <h4>Anteprima:</h4>
-          <img src={previewUrl} alt="preview" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+            {/* Mobile Menu Icon */}
+            <div className="sm:hidden">
+              <button onClick={toggleMobileMenu} className="text-black">
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Nav */}
+          {isMobileMenuOpen && (
+            <div className="sm:hidden mt-2">
+              <button
+                onClick={() => {
+                  handleShopClick();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="block w-full text-left text-black font-light tracking-wide hover:text-gray-600 transition-colors duration-300 text-sm py-2"
+              >
+                SHOP
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </header>
 
-      {uploadedUrl && (
-        <div style={{ marginTop: '1rem' }}>
-          <h4>URL pubblico Cloudinary:</h4>
-          <a href={uploadedUrl} target="_blank" rel="noopener noreferrer">{uploadedUrl}</a>
-          <div style={{ marginTop: '0.5rem' }}>
-            <img src={uploadedUrl} alt="Uploaded" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+      {/* Main Content */}
+      <main className="pt-20 sm:pt-24">
+        <section className="min-h-screen flex items-center justify-center px-4 sm:px-6">
+          <div className="w-full max-w-4xl text-center">
+            {/* Main Image */}
+            <div className="mb-8">
+              <div className=" bg-gradient-to-br from-gray-100 to-gray-300 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-500">
+                <img 
+                  src={image} 
+                  alt="HellishStorm Collection" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="w-full h-full hidden items-center justify-center">
+                  <div className="text-center px-4">
+                    <div className="text-4xl sm:text-6xl font-light text-gray-400 mb-2 tracking-widest">
+                      HELLISHSTORM
+                    </div>
+                    <div className="text-base sm:text-lg text-gray-500 font-light">
+                      STREETWEAR COLLECTION 2025
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Subtitle & CTA */}
+            <div className="space-y-4 px-2">
+              <h1 className="text-3xl sm:text-5xl font-light text-black tracking-wide leading-snug">
+                UNLEASH THE STORM
+              </h1>
+              <p className="text-base sm:text-lg text-gray-600 font-light max-w-2xl mx-auto">
+                Discover our latest collection. Raw streetwear meets contemporary design.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-100 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              © 2025 HELLISHSTORM. All rights reserved.
+            </p>
           </div>
         </div>
-      )}
-
-      {error && <p style={{ color: 'red' }}>❌ {error}</p>}
+      </footer> 
     </div>
   );
-};
-
-export default HomePage;
+}

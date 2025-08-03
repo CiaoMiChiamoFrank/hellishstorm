@@ -18,7 +18,8 @@ routAdmin.post('/login', async (req, res) => {
   const token = jwt.sign(
     {
       id: admin._id,
-      nome: admin.nome
+      nome: admin.nome,
+      role: 'admin' // CAMPO AGGIUNTO PER L'AUTENTICAZIONE
     },
     SECRET_KEY,
     { expiresIn: '2h' }
